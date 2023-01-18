@@ -16,7 +16,7 @@ public class DBConnectionUtil {
         try {
 
             Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            // *** DriverManager가 h2 라이브러리 내의 Driver 클래스 정보를 찾아서 h2 드라이버를 호출 및 처리해줌
+            // *** DriverManager가 h2 라이브러리 내의 Driver 클래스를 인식하고 정보를 찾아서 h2 드라이버를 호출 및 처리해줌
             // -> *** 즉, JDBC 표준 인터페이스가 '구현체'인 각각의 DB 드라이버를 찾아서 연결해줌
             // *** Connection은 Interface -> 구현체는 DB 드라이버 클래스인 jdbcConnection의 인스턴스
             // + 실제로 해당 클래스는 Connection을 implements하고있음
