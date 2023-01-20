@@ -19,7 +19,7 @@ class MemberRepositoryV0Test {
     void crud() throws SQLException {
 
         //save
-        Member member = new Member("memberV2", 10000);
+        Member member = new Member("memberV0", 10000);
         repository.save(member); //save()에 Checked Exception을 throwing하고 있으므로 받아주어야함
 
         //findById
@@ -30,11 +30,17 @@ class MemberRepositoryV0Test {
 
         log.info("findMember == member = {}", findMember == member);
         // *** 실제로는 다른 인스턴스이므로 당연히 false
-        
+
         log.info("findMember.equals(member) = {}", findMember.equals(member));
         // -> but, @Data의 EqualsAndHashCode를 통해 오버라이딩됨 -> 값만 비교할 수 있음
 
         // -> assertThat()의 isEqualTo() 또한 내부적으로는 비슷한 원리로 값을 비교
         assertThat(findMember).isEqualTo(member);
+
+        //update - money : 10000 -> 20000
+        repository.update(member.getMemberId(), 20000);
+        Member updatedMember = repository.findById(member.getMemberId());
+
+        assertThat(updatedMember.getMoney()).isEqualTo(20000);
     }
 }
