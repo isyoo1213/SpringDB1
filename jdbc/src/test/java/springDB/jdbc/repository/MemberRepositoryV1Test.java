@@ -74,4 +74,7 @@ class MemberRepositoryV1Test {
     // *** 현재 Test의 문제점
     // 중간에 오류가 발생할 시, 윗 단에서 이루어진 DB에서의 수정이 그대로 반영되어버림
     // -> 이후 transaction에서 다룰 예정
+
+    // + 현재 LOCAL 상태에서 Test실행 시 Connection Pool이 획득한 conn의 갯수가 6~7개까지만 로깅됨
+    // -> thread의 sleep() 조정을 해보거나 원인 파악 필요
 }
