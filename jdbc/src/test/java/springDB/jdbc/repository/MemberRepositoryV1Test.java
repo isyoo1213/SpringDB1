@@ -76,5 +76,5 @@ class MemberRepositoryV1Test {
     // -> 이후 transaction에서 다룰 예정
 
     // + 현재 LOCAL 상태에서 Test실행 시 Connection Pool이 획득한 conn의 갯수가 6~7개까지만 로깅됨
-    // -> thread의 sleep() 조정을 해보거나 원인 파악 필요
+    // -> thread의 sleep() 조정을 해보거나 원인 파악 필요요
 }
