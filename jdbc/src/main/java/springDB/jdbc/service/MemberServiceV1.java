@@ -6,7 +6,7 @@ import springDB.jdbc.repository.MemberRepositoryV1;
 
 import java.sql.SQLException;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor //final만으로 생성자 주입 가능 -> 생략하고 생성자 추가해주는 것으로 대체 가능
 public class MemberServiceV1 {
 
     private final MemberRepositoryV1 memberRepository;
