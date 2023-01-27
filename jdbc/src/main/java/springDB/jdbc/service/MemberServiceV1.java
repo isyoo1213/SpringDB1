@@ -13,6 +13,11 @@ public class MemberServiceV1 {
 
     public void accountTransfer(String fromId, String toId, int money) throws SQLException {
 
+        // * Transaction의 원자성을 위해 Service의 메서드 단위로 트랜잭션 시작
+        // -> Connection이나 SQL과 직접적으로 맞대는 Low-Level 클래스보다 원자성 보장이 쉽고 논리적
+        // -> 결국 Service 계층에서 Connection을 획득하는 메서드와 함께 * 동일한 conn 내에서 트랜잭션 처리
+        // -> * V2에서는 conn을 Parameter로 넘겨 동일한 conn을 유지하는 방식을 사용
+
         Member fromMember = memberRepository.findById(fromId);
         Member toMember = memberRepository.findById(toId);
 
@@ -23,6 +28,8 @@ public class MemberServiceV1 {
         validation(toMember);
 
         memberRepository.update(toId, toMember.getMoney() + money);
+
+        // * Commit or RollBack
     }
     private void validation(Member toMember) {
         //예시를 위한 고의적인 예외 발생

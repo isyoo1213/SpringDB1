@@ -2,7 +2,6 @@ package springDB.jdbc.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.support.JdbcUtils;
-import springDB.jdbc.connection.DBConnectionUtil;
 import springDB.jdbc.domain.Member;
 
 import javax.sql.DataSource;
@@ -10,16 +9,18 @@ import java.sql.*;
 import java.util.NoSuchElementException;
 
 /**
- * JDBC - DataSource, JDBCUtils 사용
+ * JDBC - Transaction을 위해 Connection을 Parameter로 넘기기
+ * 1. findById() 메서드
+ * 2. update() 메서드
  */
 
 @Slf4j
-public class MemberRepositoryV1 {
+public class MemberRepositoryV2 {
 
     //의존 관계 주입 - 생성자 주입
     private final DataSource dataSource;
 
-    public MemberRepositoryV1(DataSource dataSource) {
+    public MemberRepositoryV2(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -188,7 +189,6 @@ public class MemberRepositoryV1 {
         JdbcUtils.closeResultSet(rs);
         JdbcUtils.closeStatement(stmt);
         JdbcUtils.closeConnection(con);
-        //실제 메서드를 살펴보면, SQLException 외의 다른 Exception도 처리할 수 있도록 구성
     }
 
     //DriveManager가 아닌 DataSource에서 얻은 Connection 사용
