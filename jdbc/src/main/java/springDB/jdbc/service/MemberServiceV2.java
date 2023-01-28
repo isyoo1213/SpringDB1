@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springDB.jdbc.domain.Member;
 import springDB.jdbc.repository.MemberRepositoryV1;
+import springDB.jdbc.repository.MemberRepositoryV2;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -20,7 +21,7 @@ public class MemberServiceV2 {
 
     // * Transaction에 사용할 Connection 획득을 위한 DataSource 의존
     private final DataSource dataSource;
-    private final MemberRepositoryV1 memberRepository;
+    private final MemberRepositoryV2 memberRepository;
 
     public void accountTransfer(String fromId, String toId, int money) throws SQLException {
         // 트랜잭션에 사용할 conn 획득
@@ -74,6 +75,7 @@ public class MemberServiceV2 {
     private void validation(Member toMember) {
         //예시를 위한 고의적인 예외 발생
         if (toMember.getMemberId().equals("ex")) {
+            log.info("validation error");
             throw new IllegalStateException("이체중 예외 발생");
         }
     }
