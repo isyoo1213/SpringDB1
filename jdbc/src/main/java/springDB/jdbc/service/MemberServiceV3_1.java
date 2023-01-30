@@ -15,6 +15,7 @@ import java.sql.SQLException;
 
 /**
  * PlatformTransactionManager 적용
+ * Service 계층에 침투한 구체화된 의존관계의 제거
  */
 @Slf4j
 @RequiredArgsConstructor
