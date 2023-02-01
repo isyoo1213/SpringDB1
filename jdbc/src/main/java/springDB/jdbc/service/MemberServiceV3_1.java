@@ -31,11 +31,31 @@ public class MemberServiceV3_1 {
 
     public void accountTransfer(String fromId, String toId, int money) throws SQLException {
         // 더이상 트랜잭션에 사용할 conn을 직접 생성해주지 않음
-        // *** con의 제어권은 repository의 getConnection()을 담당하는 DataSourceUtils에서 con의 관리여부 파악에 따라 생성 제어됨
-        // + cf) 소멸 제어
-        // 1. '동기화'를 위한 비즈니스 로직 단계 - repository의 DataSourceUtils
-        // 2. commit이나 rollback 후 Service 단계 - transactionManager의 내부 처리
+        // *** '동기화된' con의 제어권
+        // - repository의 getConnection()을 담당하는 DataSourceUtils - '트랜잭션 동기화 매니저'
+        // - con의 관리여부 파악에 따라 생성 제어됨
+        // cf) 소멸 제어
+        // 1. '동기화'를 위한 비즈니스 로직 단계 - repository의 DataSourceUtils - 트랜잭션 동기화 매니저
+        // 2. commit이나 rollback 후 Service 단계 - transactionManager의 내부 처리 - 트랜잭션 매니저
         //Connection con = dataSource.getConnection();
+
+        // * 실질적인 동작 순서
+        // Transaction Start
+        // 1. transaction manager에서 dataSource를 활용한 conn 획득
+        // 2. 수동 모드 commit을 통해 실제 DB의 transaction 시작
+        // 3. conn을 transaction sync manager에 저장 - threadLocal에 저장 -> Multi Thread 환경에서 안전하게 보관 가능
+        // Transaction Logic
+        // 1. bizLogic의 DB 접근 호출 - repository
+        // 2. DataSourceUtils.getConnection(dataSource)를 통해 '트랜잭션 동기화 매니저'에 보관된 '동기화된' conn 조회 및 사용
+        // Transaction End - '동기화된' conn의 경우
+        // - bizLogic인 repository 계층에서 close()하지 않고, Service 계층의 Transaction 종료 시점에 close() 해주어야함
+        // - by transaction manager의 commit or rollback
+        // 1. From transaction sync manager에서 종료시킬 '동기화된' conn을 조회 To transaction manager
+        // 2. 해당 conn을 통해 transaction을 commit or rollback - transaction manager, 즉 Service 계층
+        // 3. 전체 resource 정리
+        // - transaction sync manager 정리 -> threadLocal의 정리
+        // - con.setAutoCommit(true) 로 되돌림 -> For Connection Pool로 반환되는 con의 상태를 위해
+        // - con.close() 호출 -> 종료 or 반환
 
         // * Transaction 시작 by transactionManager의 getTransaction()
         // * DefaultTransactionDefinition - transaction을 위한 기본적인 상수들이 설정되어 있음
