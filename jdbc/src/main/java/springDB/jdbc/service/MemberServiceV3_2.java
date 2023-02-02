@@ -21,7 +21,6 @@ import java.sql.SQLException;
 //@RequiredArgsConstructor //이제 생성자에서 로직이 필요하므로 해당 어노테이션 제거
 public class MemberServiceV3_2 {
 
-
     // * 기존의 PlatformTransactionManager 주입을 직접받는 것이 아닌, TransactionTemplate 생성 과정에서 주입
     //private final PlatformTransactionManager transactionManager;
     private final TransactionTemplate txTemplate;
@@ -34,6 +33,12 @@ public class MemberServiceV3_2 {
         this.txTemplate = new TransactionTemplate(transactionManager);
         this.memberRepository = memberRepository;
     }
+
+    // *** 그러나, 현재의 문제점
+    // 반복되는 코드 패턴은 축약시켰으나 Service 계층에 transaction을 처리하는 코드가 존재 -> 이후에 transaction 사용하지 않는다면 수정필요
+    // -> 즉, 핵심 로직인 비즈니스 로직과 부가 로직인 transaction 처리 로직이 동시에 존재
+    // -> 하나의 클래스에서 2개의 관심사를 공통으로 처리하고 있음
+    // -> 이를 해결하기 위해 transaction AOP를 사용할 예정
 
     public void accountTransfer(String fromId, String toId, int money) throws SQLException {
 
