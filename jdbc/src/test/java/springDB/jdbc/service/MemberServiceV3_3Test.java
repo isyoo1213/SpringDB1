@@ -45,24 +45,34 @@ class MemberServiceV3_3Test {
 
     @TestConfiguration
     static class TestConfig {
+
+        //dataSource는 transactionManager, Repository에서 사용
         @Bean
         DataSource dataSource() {
             return new DriverManagerDataSource(URL, USERNAME, PASSWORD);
         }
+
+        //transactionManager 또한 AOP를 위한 Proxy에서 주입받아서 transaction 관련된 처리
+        // *** 원칙적으로 Spring AOP를 통한 transaction은 Bean을 통한 transactionManager를 사용하므로, 꼭 등록해주어야 함
         @Bean
         PlatformTransactionManager transactionManager() {
             return new DataSourceTransactionManager(dataSource());
+
         }
+
         @Bean
         MemberRepositoryV3 memberRepositoryV3() {
             return new MemberRepositoryV3(dataSource());
         }
+
         @Bean
         MemberServiceV3_3 memberServiceV3_3() {
             return new MemberServiceV3_3(memberRepositoryV3());
         }
     }
 
+/*
+    // * Spring Container에 등록된 Bean 사용을 위해 dataSource, repository, transactionManager에 대한 Before() 설정 X
     @BeforeEach
     void before() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource(URL, USERNAME, PASSWORD);
@@ -72,6 +82,7 @@ class MemberServiceV3_3Test {
         //PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         memberService = new MemberServiceV3_3(memberRepository);
     }
+*/
 
     @AfterEach
     void after() throws SQLException {
