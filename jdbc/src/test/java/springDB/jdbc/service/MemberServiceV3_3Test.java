@@ -1,10 +1,12 @@
 package springDB.jdbc.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -18,6 +20,7 @@ import springDB.jdbc.repository.MemberRepositoryV3;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static springDB.jdbc.connection.ConnectionConst.*;
@@ -40,8 +43,10 @@ class MemberServiceV3_3Test {
 
     @Autowired
     private MemberRepositoryV3 memberRepository;
+
     @Autowired
     private MemberServiceV3_3 memberService;
+    // *** 실제로 주입받는 인스턴스는 transaction 처리 로직을 위한 Proxy 클래스의 인스턴스
 
     @TestConfiguration
     static class TestConfig {
@@ -57,7 +62,6 @@ class MemberServiceV3_3Test {
         @Bean
         PlatformTransactionManager transactionManager() {
             return new DataSourceTransactionManager(dataSource());
-
         }
 
         @Bean
@@ -89,6 +93,26 @@ class MemberServiceV3_3Test {
         memberRepository.delete(MEMBER_A);
         memberRepository.delete(MEMBER_B);
         memberRepository.delete(MEMBER_EX);
+    }
+
+    @Test
+    void aopCheck() {
+        log.info("memberService class = {}", memberService.getClass());
+        //Service의 실제 로그
+        //memberService class = class springDB.jdbc.service.MemberServiceV3_3$$SpringCGLIB$$0
+
+        // *** 즉, 'transaction 처리 로직'을 위한 Proxy 클래스
+        // cf) 이후 '비즈니스 로직'을 처리할 실제 Service 클래스의 '로직'
+        // -> *** 즉, TestConfig에서 주입받은 Service는 transaction 처리 로직을 위한 Proxy 클래스이며
+        //    + 이 proxy 클래스가 실제 Service 클래스의 @Transactional 어노테이션이 붙은 메서드의 실제 bizLogic을 호출해내는 방식
+
+        log.info("memberRepository class = {}", memberRepository.getClass());
+        // Repository의 실제 로그
+        //emberRepository class = class springDB.jdbc.repository.MemberRepositoryV3
+
+        //Aop의 Proxy 인스턴스인지 확인하는 기능
+        assertThat(AopUtils.isAopProxy(memberService)).isTrue();
+        assertThat(AopUtils.isAopProxy(memberRepository)).isFalse();
     }
 
     @Test
