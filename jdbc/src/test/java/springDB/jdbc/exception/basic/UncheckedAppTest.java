@@ -24,6 +24,19 @@ class UncheckedAppTest {
         assertThatThrownBy(() -> controller.request()).isInstanceOf(MyRuntimeSQLException.class);
     }
 
+    @Test
+    void printEx() {
+        Controller controller = new Controller();
+        try {
+            controller.request();
+        } catch (Exception e) {
+            //printStackTrace()를 호출하는 것 보다 log를 남기는 것이 더 바람직
+            // * but, System.out에 출력하기 위해서는 사용 가능
+            //e.printStackTrace();
+            log.info("ex", e);
+        }
+    }
+
     static class Controller {
         Service service = new Service();
 
