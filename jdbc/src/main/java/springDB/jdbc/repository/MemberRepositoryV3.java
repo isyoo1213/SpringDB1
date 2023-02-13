@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
  */
 
 @Slf4j
-public class MemberRepositoryV3 {
+public class MemberRepositoryV3 implements MemberRepositoryEx{
 
     //의존 관계 주입 - 생성자 주입
     private final DataSource dataSource;
