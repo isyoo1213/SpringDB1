@@ -126,7 +126,7 @@ public class MemberRepositoryV4_1 implements MemberRepository{
             pstmt.executeUpdate();
         } catch (SQLException e) {
             log.error("db error", e);
-            throw e;
+            throw new MyDbException(e);
         } finally {
             close(con, pstmt, null);
         }
