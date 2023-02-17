@@ -13,6 +13,7 @@ import springDB.jdbc.domain.Member;
 import springDB.jdbc.repository.MemberRepository;
 import springDB.jdbc.repository.MemberRepositoryV3;
 import springDB.jdbc.repository.MemberRepositoryV4_1;
+import springDB.jdbc.repository.MemberRepositoryV4_2;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -21,8 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * 구현체인 V4_1 Repository가 unchecked를 thrwing하는 interface화 된 Repository에 의존
+ * 1. 구현체인 V4_1 Repository가 unchecked를 thrwing하는 interface화 된 Repository에 의존
  * -> 예외 누수 문제 해결 + SQLException 제거
+ * 2. SQLExceptionTranslator를 적용해보기
  */
 @Slf4j
 @SpringBootTest
@@ -51,7 +53,8 @@ class MemberServiceV4Test {
         // + 추상화에 의존하면서 구체화 클래스에 대한 유연성 확보
         @Bean
         MemberRepository memberRepository() {
-            return new MemberRepositoryV4_1(dataSource);
+            //return new MemberRepositoryV4_1(dataSource);
+            return new MemberRepositoryV4_2(dataSource);
         }
 
         @Bean
