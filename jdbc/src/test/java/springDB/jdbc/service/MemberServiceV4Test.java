@@ -10,10 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import springDB.jdbc.domain.Member;
-import springDB.jdbc.repository.MemberRepository;
-import springDB.jdbc.repository.MemberRepositoryV3;
-import springDB.jdbc.repository.MemberRepositoryV4_1;
-import springDB.jdbc.repository.MemberRepositoryV4_2;
+import springDB.jdbc.repository.*;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -25,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * 1. 구현체인 V4_1 Repository가 unchecked를 thrwing하는 interface화 된 Repository에 의존
  * -> 예외 누수 문제 해결 + SQLException 제거
  * 2. SQLExceptionTranslator를 적용해보기
+ * 3. JDBCTemplate 적용해보기 -> RepositoryV5
  */
 @Slf4j
 @SpringBootTest
@@ -54,7 +52,8 @@ class MemberServiceV4Test {
         @Bean
         MemberRepository memberRepository() {
             //return new MemberRepositoryV4_1(dataSource);
-            return new MemberRepositoryV4_2(dataSource);
+            //return new MemberRepositoryV4_2(dataSource);
+            return new MemberRepositoryV5(dataSource);
         }
 
         @Bean
